@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
-    { logger: ['error', 'warn', 'fatal', 'verbose'] },
+    // { logger: ['error', 'warn', 'fatal', 'verbose'] },
   );
   app.useStaticAssets({
     root: join(__dirname, '..', 'public'),

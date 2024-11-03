@@ -1,0 +1,63 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  pizza-app:
+    build: .
+    restart: always
+    environment:
+      NODE_ENV: development
+      PORT: '${APPLICATION_PORT}'
+      JWT_KEY: '${JWT_KEY}'
+      DATABASE_HOST: '${DATABASE_HOST}'
+      DATABASE_USER: '${DATABASE_USER}'
+      DATABASE_PASS: '${DATABASE_PASS}'
+      DATABASE_NAME: '${DATABASE_NAME}'
+      DATABASE_PORT: '${DATABASE_PORT}'
+
+    ports:
+      - '${APPLICATION_PORT}:${APPLICATION_PORT}'
+      - '${APPLICATION_SOCKET_PORT}:${APPLICATION_SOCKET_PORT}'
+    command: yarn start:dev
+    volumes:
+      - .:/src/
+      - /src/node_modules
+
+  postgres:
+    image: postgres:17
+    ports:
+      - '${DATABASE_PORT}:${DATABASE_PORT}'
+    environment:
+      POSTGRES_USER: '${DATABASE_USER}'
+      POSTGRES_PASSWORD: '${DATABASE_PASS}'
+      POSTGRES_DB: '${DATABASE_NAME}'
+# Uncomment sonarqube service to view sonarcube report on localhost:9000
+
+# sonarqube:
+#   build:
+#     context: .
+#     dockerfile: Dockerfile-sonarqube
+#   ports:
+#     - "9000:9000"
+#   environment:
+#     - SONARQUBE_JDBC_URL=jdbc:mariadb://mariadb:3306/sonar
+#     - SONARQUBE_JDBC_USERNAME=sonar
+#     - SONARQUBE_JDBC_PASSWORD=sonar
+#   depends_on:
+#     - mariadb
+#   volumes:
+#     - ./sonarqube_data:/opt/sonarqube/data
+
+# Uncomment sonarscanner service to run sonar scan and update the report
+# that can be seen on sonar server on localhost:9000 once the scanner report is generated and processed by sonar server
+
+# sonarscanner:
+#   image: sonarsource/sonar-scanner-cli
+#   depends_on:
+#     - sonarqube
+#   volumes:
+#     - ".:/usr/src"
+#   command: >
+#     /bin/sh -c "sleep 30;
+#                sonar-scanner;
+#                echo 'SonarScanner completed';
+#                exit 0"
